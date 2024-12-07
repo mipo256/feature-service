@@ -13,7 +13,7 @@ public class ReleaseService {
     private final ProductRepository productRepository;
     private final FeatureRepository featureRepository;
 
-    public ReleaseService(
+    ReleaseService(
             ReleaseRepository releaseRepository,
             ProductRepository productRepository,
             FeatureRepository featureRepository) {
@@ -22,12 +22,12 @@ public class ReleaseService {
         this.featureRepository = featureRepository;
     }
 
-    public List<ReleaseDto> findReleasesByProductCode(String productCode) {
+    public List<Release> findReleasesByProductCode(String productCode) {
         return releaseRepository.findByProductCode(productCode);
     }
 
-    public Optional<ReleaseDto> findReleaseByCode(String code) {
-        return releaseRepository.findReleaseByCode(code);
+    public Optional<Release> findReleaseByCode(String code) {
+        return releaseRepository.findByCode(code);
     }
 
     @Transactional

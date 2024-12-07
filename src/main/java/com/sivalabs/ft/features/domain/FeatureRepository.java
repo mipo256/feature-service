@@ -2,16 +2,14 @@ package com.sivalabs.ft.features.domain;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.ListCrudRepository;
 
-public interface FeatureRepository extends JpaRepository<Feature, Long> {
+interface FeatureRepository extends ListCrudRepository<Feature, Long> {
     Optional<Feature> findByCode(String code);
 
-    List<FeatureDto> findByReleaseCode(String releaseCode);
-
-    Optional<FeatureDto> findFeatureByCode(String code);
+    List<Feature> findByReleaseCode(String releaseCode);
 
     @Modifying
     void deleteByCode(String code);

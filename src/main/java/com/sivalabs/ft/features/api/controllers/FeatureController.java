@@ -1,10 +1,11 @@
 package com.sivalabs.ft.features.api.controllers;
 
+import com.sivalabs.ft.features.api.dtos.FeatureDto;
 import com.sivalabs.ft.features.api.utils.SecurityUtils;
 import com.sivalabs.ft.features.domain.CreateFeatureCommand;
-import com.sivalabs.ft.features.domain.FeatureDto;
 import com.sivalabs.ft.features.domain.FeatureService;
 import com.sivalabs.ft.features.domain.UpdateFeatureCommand;
+import com.sivalabs.ft.features.mappers.FeatureMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -37,9 +38,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 class FeatureController {
     private static final Logger log = LoggerFactory.getLogger(FeatureController.class);
     private final FeatureService featureService;
+    private final FeatureMapper featureMapper;
 
-    FeatureController(FeatureService featureService) {
+    FeatureController(FeatureService featureService, FeatureMapper featureMapper) {
         this.featureService = featureService;
+        this.featureMapper = featureMapper;
     }
 
     @GetMapping("")
@@ -56,7 +59,9 @@ class FeatureController {
                                         array = @ArraySchema(schema = @Schema(implementation = FeatureDto.class))))
             })
     List<FeatureDto> getFeatures(@RequestParam("releaseCode") String releaseCode) {
-        return featureService.findFeatures(releaseCode);
+        return featureService.findFeatures(releaseCode).stream()
+                .map(featureMapper::toDto)
+                .toList();
     }
 
     @GetMapping("/{code}")
@@ -76,6 +81,7 @@ class FeatureController {
     ResponseEntity<FeatureDto> getFeature(@PathVariable String code) {
         return featureService
                 .findFeatureByCode(code)
+                .map(featureMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

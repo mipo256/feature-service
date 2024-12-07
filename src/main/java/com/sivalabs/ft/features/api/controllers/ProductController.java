@@ -1,10 +1,11 @@
 package com.sivalabs.ft.features.api.controllers;
 
+import com.sivalabs.ft.features.api.dtos.ProductDto;
 import com.sivalabs.ft.features.api.utils.SecurityUtils;
 import com.sivalabs.ft.features.domain.CreateProductCommand;
-import com.sivalabs.ft.features.domain.ProductDto;
 import com.sivalabs.ft.features.domain.ProductService;
 import com.sivalabs.ft.features.domain.UpdateProductCommand;
+import com.sivalabs.ft.features.mappers.ProductMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -35,9 +36,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 class ProductController {
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     private final ProductService productService;
+    private final ProductMapper productMapper;
 
-    ProductController(ProductService productService) {
+    ProductController(ProductService productService, ProductMapper productMapper) {
         this.productService = productService;
+        this.productMapper = productMapper;
     }
 
     @GetMapping("")
@@ -54,7 +57,9 @@ class ProductController {
                                         array = @ArraySchema(schema = @Schema(implementation = ProductDto.class))))
             })
     List<ProductDto> getProducts() {
-        return productService.findAllProducts();
+        return productService.findAllProducts().stream()
+                .map(productMapper::toDto)
+                .toList();
     }
 
     @GetMapping("/{code}")
@@ -74,6 +79,7 @@ class ProductController {
     ResponseEntity<ProductDto> getProduct(@PathVariable String code) {
         return productService
                 .findProductByCode(code)
+                .map(productMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

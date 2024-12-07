@@ -6,22 +6,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ProductService {
     private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
-    public List<ProductDto> findAllProducts() {
-        return productRepository.findAllProductsBy();
+    public List<Product> findAllProducts() {
+        return productRepository.findAll();
     }
 
-    public Optional<ProductDto> findProductByCode(String code) {
-        return productRepository.findProductByCode(code);
+    public Optional<Product> findProductByCode(String code) {
+        return productRepository.findByCode(code);
     }
 
+    @Transactional
     public Long createProduct(CreateProductCommand cmd) {
         var product = new Product();
         product.setCode(cmd.code());
@@ -34,6 +35,7 @@ public class ProductService {
         return savedProduct.getId();
     }
 
+    @Transactional
     public void updateProduct(UpdateProductCommand cmd) {
         var product = productRepository.findByCode(cmd.code()).orElseThrow();
         product.setName(cmd.name());

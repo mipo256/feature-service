@@ -1,11 +1,12 @@
 package com.sivalabs.ft.features.api.controllers;
 
+import com.sivalabs.ft.features.api.dtos.ReleaseDto;
 import com.sivalabs.ft.features.api.utils.SecurityUtils;
 import com.sivalabs.ft.features.domain.CreateReleaseCommand;
-import com.sivalabs.ft.features.domain.ReleaseDto;
 import com.sivalabs.ft.features.domain.ReleaseService;
 import com.sivalabs.ft.features.domain.ReleaseStatus;
 import com.sivalabs.ft.features.domain.UpdateReleaseCommand;
+import com.sivalabs.ft.features.mappers.ReleaseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -39,9 +40,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 class ReleaseController {
     private static final Logger log = LoggerFactory.getLogger(ReleaseController.class);
     private final ReleaseService releaseService;
+    private final ReleaseMapper releaseMapper;
 
-    ReleaseController(ReleaseService releaseService) {
+    ReleaseController(ReleaseService releaseService, ReleaseMapper releaseMapper) {
         this.releaseService = releaseService;
+        this.releaseMapper = releaseMapper;
     }
 
     @GetMapping("")
@@ -58,7 +61,9 @@ class ReleaseController {
                                         array = @ArraySchema(schema = @Schema(implementation = ReleaseDto.class))))
             })
     List<ReleaseDto> getProductReleases(@RequestParam("productCode") String productCode) {
-        return releaseService.findReleasesByProductCode(productCode);
+        return releaseService.findReleasesByProductCode(productCode).stream()
+                .map(releaseMapper::toDto)
+                .toList();
     }
 
     @GetMapping("/{code}")
@@ -78,6 +83,7 @@ class ReleaseController {
     ResponseEntity<ReleaseDto> getRelease(@PathVariable String code) {
         return releaseService
                 .findReleaseByCode(code)
+                .map(releaseMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

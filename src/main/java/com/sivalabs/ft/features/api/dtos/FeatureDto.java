@@ -1,4 +1,4 @@
-package com.sivalabs.ft.features.domain;
+package com.sivalabs.ft.features.api.dtos;
 
 import java.io.Serializable;
 import java.time.Instant;

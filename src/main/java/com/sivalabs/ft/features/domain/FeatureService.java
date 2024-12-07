@@ -12,16 +12,16 @@ public class FeatureService {
     private final ReleaseRepository releaseRepository;
     private final FeatureRepository featureRepository;
 
-    public FeatureService(ReleaseRepository releaseRepository, FeatureRepository featureRepository) {
+    FeatureService(ReleaseRepository releaseRepository, FeatureRepository featureRepository) {
         this.releaseRepository = releaseRepository;
         this.featureRepository = featureRepository;
     }
 
-    public Optional<FeatureDto> findFeatureByCode(String code) {
-        return featureRepository.findFeatureByCode(code);
+    public Optional<Feature> findFeatureByCode(String code) {
+        return featureRepository.findByCode(code);
     }
 
-    public List<FeatureDto> findFeatures(String releaseCode) {
+    public List<Feature> findFeatures(String releaseCode) {
         return featureRepository.findByReleaseCode(releaseCode);
     }
 
