@@ -30,6 +30,10 @@ public class ReleaseService {
         return releaseRepository.findByCode(code);
     }
 
+    public boolean isReleaseExists(String code) {
+        return releaseRepository.existsByCode(code);
+    }
+
     @Transactional
     public Long createRelease(CreateReleaseCommand cmd) {
         Product product = productRepository.findByCode(cmd.productCode()).orElseThrow();
@@ -57,6 +61,9 @@ public class ReleaseService {
 
     @Transactional
     public void deleteRelease(String code) {
+        if (!releaseRepository.existsByCode(code)) {
+            throw new IllegalArgumentException("Release with code " + code + " not found");
+        }
         featureRepository.deleteByReleaseCode(code);
         releaseRepository.deleteByCode(code);
     }

@@ -149,8 +149,12 @@ class FeatureController {
                 @ApiResponse(responseCode = "401", description = "Unauthorized"),
                 @ApiResponse(responseCode = "403", description = "Forbidden"),
             })
-    void deleteFeature(@PathVariable String code) {
+    ResponseEntity<Void> deleteFeature(@PathVariable String code) {
+        if (!featureService.isFeatureExists(code)) {
+            return ResponseEntity.notFound().build();
+        }
         featureService.deleteFeature(code);
+        return ResponseEntity.ok().build();
     }
 
     record CreateFeaturePayload(
