@@ -1,3 +1,7 @@
+delete from features;
+delete from releases;
+delete from products;
+
 insert into products (id, code, name, description, image_url, disabled, created_by, created_at) values
 (1, 'intellij', 'IntelliJ IDEA', 'JetBrains IDE for Java', 'https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png', false, 'admin', '2024-03-01 00:00:00'),
 (2, 'goland','GoLand', 'JetBrains IDE for Go', 'https://resources.jetbrains.com/storage/products/company/brand/logos/GoLand.png',false, 'admin','2024-03-01 00:00:00'),

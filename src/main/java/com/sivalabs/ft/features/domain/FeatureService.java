@@ -11,10 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class FeatureService {
     private final ReleaseRepository releaseRepository;
     private final FeatureRepository featureRepository;
+    private final ProductRepository productRepository;
 
-    FeatureService(ReleaseRepository releaseRepository, FeatureRepository featureRepository) {
+    FeatureService(
+            ReleaseRepository releaseRepository,
+            FeatureRepository featureRepository,
+            ProductRepository productRepository) {
         this.releaseRepository = releaseRepository;
         this.featureRepository = featureRepository;
+        this.productRepository = productRepository;
     }
 
     public Optional<Feature> findFeatureByCode(String code) {
@@ -25,10 +30,17 @@ public class FeatureService {
         return featureRepository.findByReleaseCode(releaseCode);
     }
 
+    public boolean isFeatureExists(String code) {
+        return featureRepository.existsByCode(code);
+    }
+
     @Transactional
     public Long createFeature(CreateFeatureCommand cmd) {
         Release release = releaseRepository.findByCode(cmd.releaseCode()).orElseThrow();
+        Product product =
+                productRepository.findByCode(release.getProduct().getCode()).orElseThrow();
         var feature = new Feature();
+        feature.setProduct(product);
         feature.setRelease(release);
         feature.setCode(cmd.code());
         feature.setTitle(cmd.title());
@@ -46,6 +58,7 @@ public class FeatureService {
         Feature feature = featureRepository.findByCode(cmd.code()).orElseThrow();
         feature.setTitle(cmd.title());
         feature.setDescription(cmd.description());
+        feature.setAssignedTo(cmd.assignedTo());
         feature.setStatus(cmd.status());
         feature.setUpdatedBy(cmd.updatedBy());
         feature.setUpdatedAt(Instant.now());

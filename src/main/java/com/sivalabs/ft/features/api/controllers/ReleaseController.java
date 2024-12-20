@@ -144,8 +144,12 @@ class ReleaseController {
                 @ApiResponse(responseCode = "401", description = "Unauthorized"),
                 @ApiResponse(responseCode = "403", description = "Forbidden"),
             })
-    void deleteRelease(@PathVariable String code) {
+    ResponseEntity<Void> deleteRelease(@PathVariable String code) {
+        if (!releaseService.isReleaseExists(code)) {
+            return ResponseEntity.notFound().build();
+        }
         releaseService.deleteRelease(code);
+        return ResponseEntity.ok().build();
     }
 
     record CreateReleasePayload(

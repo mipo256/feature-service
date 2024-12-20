@@ -21,7 +21,7 @@ create table releases
 (
     id          bigint       not null default nextval('release_id_seq'),
     product_id  bigint       not null,
-    code        varchar(50)  not null,
+    code        varchar(50)  not null unique,
     description text,
     status      varchar(50)  not null,
     released_at timestamp,
@@ -30,8 +30,7 @@ create table releases
     updated_by  varchar(255),
     updated_at  timestamp,
     primary key (id),
-    constraint fk_releases_product_id foreign key (product_id) references products (id),
-    constraint uk_releases_product_id_release_code unique (product_id, code)
+    constraint fk_releases_product_id foreign key (product_id) references products (id)
 );
 
 create sequence feature_id_seq start with 100 increment by 50;

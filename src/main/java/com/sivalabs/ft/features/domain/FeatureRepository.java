@@ -17,4 +17,6 @@ interface FeatureRepository extends ListCrudRepository<Feature, Long> {
     @Modifying
     @Query("delete from Feature f where f.release.code = :code")
     void deleteByReleaseCode(String code);
+
+    boolean existsByCode(String code);
 }
