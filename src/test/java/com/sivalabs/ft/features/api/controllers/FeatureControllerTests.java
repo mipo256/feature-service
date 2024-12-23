@@ -81,7 +81,7 @@ class FeatureControllerTests extends AbstractIT {
                 "title": "Updated Feature",
                 "description": "Updated description",
                 "assignedTo": "jane.doe",
-                "status": "IN_PROGRESS"
+                "status": "IN_DEVELOPMENT"
             }
             """;
 
@@ -101,7 +101,7 @@ class FeatureControllerTests extends AbstractIT {
                     assertThat(dto.title()).isEqualTo("Updated Feature");
                     assertThat(dto.description()).isEqualTo("Updated description");
                     assertThat(dto.assignedTo()).isEqualTo("jane.doe");
-                    assertThat(dto.status()).isEqualTo("IN_PROGRESS");
+                    assertThat(dto.status()).isEqualTo("IN_DEVELOPMENT");
                 });
     }
 

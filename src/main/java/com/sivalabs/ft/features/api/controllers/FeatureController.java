@@ -2,9 +2,7 @@ package com.sivalabs.ft.features.api.controllers;
 
 import com.sivalabs.ft.features.api.dtos.FeatureDto;
 import com.sivalabs.ft.features.api.utils.SecurityUtils;
-import com.sivalabs.ft.features.domain.CreateFeatureCommand;
-import com.sivalabs.ft.features.domain.FeatureService;
-import com.sivalabs.ft.features.domain.UpdateFeatureCommand;
+import com.sivalabs.ft.features.domain.*;
 import com.sivalabs.ft.features.mappers.FeatureMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -150,10 +148,12 @@ class FeatureController {
                 @ApiResponse(responseCode = "403", description = "Forbidden"),
             })
     ResponseEntity<Void> deleteFeature(@PathVariable String code) {
+        var username = SecurityUtils.getCurrentUsername();
         if (!featureService.isFeatureExists(code)) {
             return ResponseEntity.notFound().build();
         }
-        featureService.deleteFeature(code);
+        var cmd = new DeleteFeatureCommand(code, username);
+        featureService.deleteFeature(cmd);
         return ResponseEntity.ok().build();
     }
 
@@ -172,5 +172,5 @@ class FeatureController {
                     String title,
             String description,
             String assignedTo,
-            String status) {}
+            FeatureStatus status) {}
 }
