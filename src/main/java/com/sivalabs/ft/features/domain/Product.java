@@ -26,12 +26,10 @@ public class Product {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Size(max = 50)
-    @NotNull @Column(name = "code", nullable = false, length = 50)
+    @Size(max = 50) @NotNull @Column(name = "code", nullable = false, length = 50)
     private String code;
 
-    @Size(max = 255)
-    @NotNull @Column(name = "name", nullable = false)
+    @Size(max = 255) @NotNull @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "description", length = Integer.MAX_VALUE)
@@ -44,16 +42,14 @@ public class Product {
     @Column(name = "disabled", nullable = false)
     private Boolean disabled = false;
 
-    @Size(max = 255)
-    @NotNull @Column(name = "created_by", nullable = false)
+    @Size(max = 255) @NotNull @Column(name = "created_by", nullable = false)
     private String createdBy;
 
     @NotNull @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Size(max = 255)
-    @Column(name = "updated_by")
+    @Size(max = 255) @Column(name = "updated_by")
     private String updatedBy;
 
     @Column(name = "updated_at")

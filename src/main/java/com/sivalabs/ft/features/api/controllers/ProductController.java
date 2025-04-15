@@ -131,19 +131,13 @@ class ProductController {
     }
 
     record CreateProductPayload(
-            @Size(max = 50, message = "Product code cannot exceed 50 characters")
-                    @NotEmpty(message = "Product code is required")
-                    String code,
-            @Size(max = 255, message = "Product code cannot exceed 255 characters")
-                    @NotEmpty(message = "Product name is required")
-                    String name,
+            @Size(max = 50, message = "Product code cannot exceed 50 characters") @NotEmpty(message = "Product code is required") String code,
+            @Size(max = 255, message = "Product code cannot exceed 255 characters") @NotEmpty(message = "Product name is required") String name,
             String description,
             String imageUrl) {}
 
     record UpdateProductPayload(
-            @Size(max = 255, message = "Product code cannot exceed 255 characters")
-                    @NotEmpty(message = "Product name is required")
-                    String name,
+            @Size(max = 255, message = "Product code cannot exceed 255 characters") @NotEmpty(message = "Product name is required") String name,
             String description,
             String imageUrl) {}
 }

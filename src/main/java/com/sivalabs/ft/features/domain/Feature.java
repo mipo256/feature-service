@@ -23,12 +23,10 @@ public class Feature {
     @JoinColumn(name = "release_id")
     private Release release;
 
-    @Size(max = 50)
-    @NotNull @Column(name = "code", nullable = false, length = 50)
+    @Size(max = 50) @NotNull @Column(name = "code", nullable = false, length = 50)
     private String code;
 
-    @Size(max = 500)
-    @NotNull @Column(name = "title", nullable = false, length = 500)
+    @Size(max = 500) @NotNull @Column(name = "title", nullable = false, length = 500)
     private String title;
 
     @Column(name = "description", length = Integer.MAX_VALUE)
@@ -38,20 +36,17 @@ public class Feature {
     @Enumerated(EnumType.STRING)
     private FeatureStatus status;
 
-    @Size(max = 255)
-    @Column(name = "assigned_to")
+    @Size(max = 255) @Column(name = "assigned_to")
     private String assignedTo;
 
-    @Size(max = 255)
-    @NotNull @Column(name = "created_by", nullable = false)
+    @Size(max = 255) @NotNull @Column(name = "created_by", nullable = false)
     private String createdBy;
 
     @NotNull @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Size(max = 255)
-    @Column(name = "updated_by")
+    @Size(max = 255) @Column(name = "updated_by")
     private String updatedBy;
 
     @Column(name = "updated_at")
