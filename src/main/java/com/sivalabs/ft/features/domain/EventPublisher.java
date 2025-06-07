@@ -22,6 +22,7 @@ public class EventPublisher {
                 feature.getTitle(),
                 feature.getDescription(),
                 feature.getStatus(),
+                feature.getRelease() == null ? null : feature.getRelease().getCode(),
                 feature.getAssignedTo(),
                 feature.getCreatedBy(),
                 feature.getCreatedAt());
@@ -35,6 +36,7 @@ public class EventPublisher {
                 feature.getTitle(),
                 feature.getDescription(),
                 feature.getStatus(),
+                feature.getRelease() == null ? null : feature.getRelease().getCode(),
                 feature.getAssignedTo(),
                 feature.getCreatedBy(),
                 feature.getCreatedAt(),
@@ -50,6 +52,7 @@ public class EventPublisher {
                 feature.getTitle(),
                 feature.getDescription(),
                 feature.getStatus(),
+                feature.getRelease() == null ? null : feature.getRelease().getCode(),
                 feature.getAssignedTo(),
                 feature.getCreatedBy(),
                 feature.getCreatedAt(),

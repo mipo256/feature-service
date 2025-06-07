@@ -148,7 +148,13 @@ class FeatureController {
     void updateFeature(@PathVariable String code, @RequestBody UpdateFeaturePayload payload) {
         var username = SecurityUtils.getCurrentUsername();
         var cmd = new UpdateFeatureCommand(
-                code, payload.title(), payload.description(), payload.status(), payload.assignedTo(), username);
+                code,
+                payload.title(),
+                payload.description(),
+                payload.status(),
+                payload.releaseCode(),
+                payload.assignedTo(),
+                username);
         featureService.updateFeature(cmd);
     }
 
@@ -174,15 +180,16 @@ class FeatureController {
 
     record CreateFeaturePayload(
             @NotEmpty(message = "Product code is required") String productCode,
-            @NotEmpty(message = "Release code is required") String releaseCode,
             @NotEmpty(message = "Code is required") @Size(max = 50, message = "Code cannot exceed 50 characters") String code,
             @NotEmpty(message = "Title is required") @Size(max = 500, message = "Title cannot exceed 500 characters") String title,
             String description,
+            String releaseCode,
             String assignedTo) {}
 
     record UpdateFeaturePayload(
             @NotEmpty(message = "Title is required") @Size(max = 500, message = "Title cannot exceed 500 characters") String title,
             String description,
+            String releaseCode,
             String assignedTo,
             FeatureStatus status) {}
 }

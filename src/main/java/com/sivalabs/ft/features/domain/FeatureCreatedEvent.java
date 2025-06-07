@@ -8,6 +8,7 @@ public record FeatureCreatedEvent(
         String title,
         String description,
         FeatureStatus status,
+        String releaseCode,
         String assignedTo,
         String createdBy,
         Instant createdAt) {}

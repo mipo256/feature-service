@@ -43,9 +43,8 @@ public class FeatureService {
 
     @Transactional
     public Long createFeature(CreateFeatureCommand cmd) {
-        Release release = releaseRepository.findByCode(cmd.releaseCode()).orElseThrow();
-        Product product =
-                productRepository.findByCode(release.getProduct().getCode()).orElseThrow();
+        Product product = productRepository.findByCode(cmd.productCode()).orElseThrow();
+        Release release = releaseRepository.findByCode(cmd.releaseCode()).orElse(null);
         var feature = new Feature();
         feature.setProduct(product);
         feature.setRelease(release);
@@ -66,6 +65,12 @@ public class FeatureService {
         Feature feature = featureRepository.findByCode(cmd.code()).orElseThrow();
         feature.setTitle(cmd.title());
         feature.setDescription(cmd.description());
+        if (cmd.releaseCode() != null) {
+            Release release = releaseRepository.findByCode(cmd.releaseCode()).orElse(null);
+            feature.setRelease(release);
+        } else {
+            feature.setRelease(null);
+        }
         feature.setAssignedTo(cmd.assignedTo());
         feature.setStatus(cmd.status());
         feature.setUpdatedBy(cmd.updatedBy());
