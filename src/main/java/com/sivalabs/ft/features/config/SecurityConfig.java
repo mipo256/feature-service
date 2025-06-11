@@ -18,7 +18,13 @@ class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(c -> c.requestMatchers(
-                                "/favicon.ico", "/actuator/**", "/error", "/swagger-ui/**", "/v3/api-docs**")
+                                "/favicon.ico",
+                                "/actuator/**",
+                                "/error",
+                                "/swagger-ui.*",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.*")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**")
                         .permitAll()
