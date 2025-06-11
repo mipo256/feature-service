@@ -26,6 +26,7 @@ public class ProductService {
     public Long createProduct(CreateProductCommand cmd) {
         var product = new Product();
         product.setCode(cmd.code());
+        product.setPrefix(cmd.prefix());
         product.setName(cmd.name());
         product.setDescription(cmd.description());
         product.setImageUrl(cmd.imageUrl());
@@ -40,6 +41,7 @@ public class ProductService {
         var product = productRepository
                 .findByCode(cmd.code())
                 .orElseThrow(() -> new ResourceNotFoundException("Product %s not found".formatted(cmd)));
+        product.setPrefix(cmd.prefix());
         product.setName(cmd.name());
         product.setDescription(cmd.description());
         product.setImageUrl(cmd.imageUrl());

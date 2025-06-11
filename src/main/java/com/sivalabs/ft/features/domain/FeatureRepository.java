@@ -24,4 +24,7 @@ interface FeatureRepository extends ListCrudRepository<Feature, Long> {
     void deleteByReleaseCode(String code);
 
     boolean existsByCode(String code);
+
+    @Query(value = "select nextval('feature_code_seq')", nativeQuery = true)
+    long getNextFeatureId();
 }

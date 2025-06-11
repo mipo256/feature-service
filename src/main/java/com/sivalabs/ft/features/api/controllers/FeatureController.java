@@ -121,16 +121,15 @@ class FeatureController {
         var cmd = new CreateFeatureCommand(
                 payload.productCode(),
                 payload.releaseCode(),
-                payload.code(),
                 payload.title(),
                 payload.description(),
                 payload.assignedTo(),
                 username);
-        Long id = featureService.createFeature(cmd);
-        log.info("Created feature with id {}", id);
+        String code = featureService.createFeature(cmd);
+        log.info("Created feature with code {}", code);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{code}")
-                .buildAndExpand(payload.code())
+                .buildAndExpand(code)
                 .toUri();
         return ResponseEntity.created(location).build();
     }
@@ -180,7 +179,6 @@ class FeatureController {
 
     record CreateFeaturePayload(
             @NotEmpty(message = "Product code is required") String productCode,
-            @NotEmpty(message = "Code is required") @Size(max = 50, message = "Code cannot exceed 50 characters") String code,
             @NotEmpty(message = "Title is required") @Size(max = 500, message = "Title cannot exceed 500 characters") String title,
             String description,
             String releaseCode,

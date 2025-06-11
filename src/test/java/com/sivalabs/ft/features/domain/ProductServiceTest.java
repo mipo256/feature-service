@@ -40,7 +40,8 @@ class ProductServiceTest {
 
     @Test
     void testCreateProduct() {
-        var command = new CreateProductCommand("new-code", "New Product", "Description", "image-url", "user");
+        var command =
+                new CreateProductCommand("new-code", "SomePrefix", "New Product", "Description", "image-url", "user");
         long prev = productRepository.findAll().size();
         Long productId = productService.createProduct(command);
         assertThat(productId).as("Product ID should not be null after creation").isNotNull();
@@ -60,7 +61,7 @@ class ProductServiceTest {
     void testUpdateProduct() {
         String productCode = "intellij";
         var updateCommand = new UpdateProductCommand(
-                productCode, "Updated Name", "Updated Description", "updated-image-url", "updater");
+                productCode, "SomePrefix", "Updated Name", "Updated Description", "updated-image-url", "updater");
         productService.updateProduct(updateCommand);
         var updatedProduct = productRepository
                 .findByCode(productCode)
@@ -74,8 +75,8 @@ class ProductServiceTest {
     @Test
     void testUpdateNonExistingProduct() {
         String nonExistentCode = "non-existent";
-        var updateCommand =
-                new UpdateProductCommand(nonExistentCode, "Some Name", "Some Description", "some-image-url", "user");
+        var updateCommand = new UpdateProductCommand(
+                nonExistentCode, "SomePrefix", "Some Name", "Some Description", "some-image-url", "user");
         assertThatThrownBy(() -> productService.updateProduct(updateCommand))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .as("Error message must contain product code")

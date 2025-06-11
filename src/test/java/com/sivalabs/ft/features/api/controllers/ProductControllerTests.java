@@ -27,6 +27,7 @@ class ProductControllerTests extends AbstractIT {
         var expected = new ProductDto(
                 1L,
                 "intellij",
+                "IDEA",
                 "IntelliJ IDEA",
                 "JetBrains IDE for Java",
                 "https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png",
@@ -38,7 +39,7 @@ class ProductControllerTests extends AbstractIT {
                 .bodyJson()
                 .convertTo(ProductDto.class)
                 .usingRecursiveComparison()
-                .comparingOnlyFields("code", "name", "description", "imageUrl", "disabled", "createdBy")
+                .comparingOnlyFields("code", "prefix", "name", "description", "imageUrl", "disabled", "createdBy")
                 .isEqualTo(expected);
     }
 
@@ -55,6 +56,7 @@ class ProductControllerTests extends AbstractIT {
                 """
             {
                 "code": "rover",
+                "prefix": "RVR",
                 "name": "Rust Rover",
                 "description": "JetBrains Rust Rover",
                 "imageUrl": "https://resources.jetbrains.com/storage/products/company/brand/logos/RustRover.png"
@@ -90,6 +92,7 @@ class ProductControllerTests extends AbstractIT {
         var expected = new ProductDto(
                 1L,
                 "intellij",
+                "IDEA",
                 "IntelliJ IDEA Ultimate",
                 "Best IDE for Java",
                 "https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA_Ultimate.png",
@@ -101,7 +104,7 @@ class ProductControllerTests extends AbstractIT {
                 .bodyJson()
                 .convertTo(ProductDto.class)
                 .usingRecursiveComparison()
-                .comparingOnlyFields("code", "name", "description", "imageUrl", "disabled", "createdBy")
+                .comparingOnlyFields("code", "prefix", "name", "description", "imageUrl", "disabled", "createdBy")
                 .isEqualTo(expected);
     }
 }

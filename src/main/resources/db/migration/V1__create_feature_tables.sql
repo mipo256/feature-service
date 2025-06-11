@@ -4,6 +4,7 @@ create table products
 (
     id          bigint       not null default nextval('product_id_seq'),
     code        varchar(50)  not null unique,
+    prefix      varchar(10)  not null unique,
     name        varchar(255) not null unique,
     description text,
     image_url   varchar(255) not null,
@@ -53,3 +54,5 @@ create table features
     constraint fk_features_product_id foreign key (product_id) references products (id),
     constraint fk_features_release_id foreign key (release_id) references releases (id)
 );
+
+create sequence feature_code_seq start with 100 increment by 1;

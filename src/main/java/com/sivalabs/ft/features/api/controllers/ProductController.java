@@ -104,7 +104,7 @@ class ProductController {
     ResponseEntity<Void> createProduct(@RequestBody @Valid CreateProductPayload payload) {
         var username = SecurityUtils.getCurrentUsername();
         var cmd = new CreateProductCommand(
-                payload.code(), payload.name(), payload.description(), payload.imageUrl(), username);
+                payload.code(), payload.prefix(), payload.name(), payload.description(), payload.imageUrl(), username);
         Long id = productService.createProduct(cmd);
         log.info("Created product with id {}", id);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -126,18 +126,21 @@ class ProductController {
             })
     void updateProduct(@PathVariable String code, @RequestBody UpdateProductPayload payload) {
         var username = SecurityUtils.getCurrentUsername();
-        var cmd = new UpdateProductCommand(code, payload.name(), payload.description(), payload.imageUrl(), username);
+        var cmd = new UpdateProductCommand(
+                code, payload.prefix(), payload.name(), payload.description(), payload.imageUrl(), username);
         productService.updateProduct(cmd);
     }
 
     record CreateProductPayload(
             @Size(max = 50, message = "Product code cannot exceed 50 characters") @NotEmpty(message = "Product code is required") String code,
-            @Size(max = 255, message = "Product code cannot exceed 255 characters") @NotEmpty(message = "Product name is required") String name,
+            @Size(max = 10, message = "Product prefix cannot exceed 10 characters") @NotEmpty(message = "Product prefix is required") String prefix,
+            @Size(max = 255, message = "Product name cannot exceed 255 characters") @NotEmpty(message = "Product name is required") String name,
             String description,
             String imageUrl) {}
 
     record UpdateProductPayload(
-            @Size(max = 255, message = "Product code cannot exceed 255 characters") @NotEmpty(message = "Product name is required") String name,
+            @Size(max = 10, message = "Product prefix cannot exceed 10 characters") @NotEmpty(message = "Product prefix is required") String prefix,
+            @Size(max = 255, message = "Product name cannot exceed 255 characters") @NotEmpty(message = "Product name is required") String name,
             String description,
             String imageUrl) {}
 }

@@ -29,6 +29,9 @@ public class Product {
     @Size(max = 50) @NotNull @Column(name = "code", nullable = false, length = 50)
     private String code;
 
+    @Size(max = 50) @NotNull @Column(name = "prefix", nullable = false, length = 10)
+    private String prefix;
+
     @Size(max = 255) @NotNull @Column(name = "name", nullable = false)
     private String name;
 
@@ -86,6 +89,14 @@ public class Product {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public String getName() {

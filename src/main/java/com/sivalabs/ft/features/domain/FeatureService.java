@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class FeatureService {
+    public static final String FEATURE_SEPARATOR = "-";
     private final ReleaseRepository releaseRepository;
     private final FeatureRepository featureRepository;
     private final ProductRepository productRepository;
@@ -42,13 +43,14 @@ public class FeatureService {
     }
 
     @Transactional
-    public Long createFeature(CreateFeatureCommand cmd) {
+    public String createFeature(CreateFeatureCommand cmd) {
         Product product = productRepository.findByCode(cmd.productCode()).orElseThrow();
         Release release = releaseRepository.findByCode(cmd.releaseCode()).orElse(null);
+        String code = product.getPrefix() + FEATURE_SEPARATOR + featureRepository.getNextFeatureId();
         var feature = new Feature();
         feature.setProduct(product);
         feature.setRelease(release);
-        feature.setCode(cmd.code());
+        feature.setCode(code);
         feature.setTitle(cmd.title());
         feature.setDescription(cmd.description());
         feature.setStatus(FeatureStatus.NEW);
@@ -57,7 +59,7 @@ public class FeatureService {
         feature.setCreatedAt(Instant.now());
         featureRepository.save(feature);
         eventPublisher.publishFeatureCreatedEvent(feature);
-        return feature.getId();
+        return code;
     }
 
     @Transactional

@@ -108,11 +108,11 @@ class ReleaseController {
     ResponseEntity<Void> createRelease(@RequestBody @Valid CreateReleasePayload payload) {
         var username = SecurityUtils.getCurrentUsername();
         var cmd = new CreateReleaseCommand(payload.productCode(), payload.code(), payload.description(), username);
-        Long id = releaseService.createRelease(cmd);
-        log.info("Created release with id {}", id);
+        String code = releaseService.createRelease(cmd);
+        log.info("Created release with code {}", code);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{code}")
-                .buildAndExpand(payload.code())
+                .buildAndExpand(code)
                 .toUri();
         return ResponseEntity.created(location).build();
     }

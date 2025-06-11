@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class ReleaseService {
+    public static final String RELEASE_SEPARATOR = "-";
     private final ReleaseRepository releaseRepository;
     private final ProductRepository productRepository;
     private final FeatureRepository featureRepository;
@@ -35,17 +36,21 @@ public class ReleaseService {
     }
 
     @Transactional
-    public Long createRelease(CreateReleaseCommand cmd) {
+    public String createRelease(CreateReleaseCommand cmd) {
         Product product = productRepository.findByCode(cmd.productCode()).orElseThrow();
+        String code = cmd.code();
+        if (!cmd.code().startsWith(product.getPrefix() + RELEASE_SEPARATOR)) {
+            code = product.getPrefix() + RELEASE_SEPARATOR + cmd.code();
+        }
         Release release = new Release();
         release.setProduct(product);
-        release.setCode(cmd.code());
+        release.setCode(code);
         release.setDescription(cmd.description());
         release.setStatus(ReleaseStatus.DRAFT);
         release.setCreatedBy(cmd.createdBy());
         release.setCreatedAt(Instant.now());
         releaseRepository.save(release);
-        return release.getId();
+        return code;
     }
 
     @Transactional
