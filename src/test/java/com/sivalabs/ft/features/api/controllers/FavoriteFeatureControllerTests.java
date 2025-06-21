@@ -13,8 +13,9 @@ class FavoriteFeatureControllerTests extends AbstractIT {
     @WithMockOAuth2User(username = "user")
     void shouldAddFavoriteFeature() {
         var featureCode = "IDEA-1";
-        var result =
-                mvc.post().uri("/api/features/{featureCode}/favorites", featureCode).exchange();
+        var result = mvc.post()
+                .uri("/api/features/{featureCode}/favorites", featureCode)
+                .exchange();
         assertThat(result).hasStatus(HttpStatus.CREATED);
     }
 
@@ -57,8 +58,9 @@ class FavoriteFeatureControllerTests extends AbstractIT {
     void shouldReturn400WhenAddingAlreadyFavoriteFeature() {
         var featureCode = "IDEA-2"; // this is already added form script
 
-        var result =
-                mvc.post().uri("/api/features/{featureCode}/favorites", featureCode).exchange();
+        var result = mvc.post()
+                .uri("/api/features/{featureCode}/favorites", featureCode)
+                .exchange();
         assertThat(result).hasStatus(HttpStatus.BAD_REQUEST);
     }
 

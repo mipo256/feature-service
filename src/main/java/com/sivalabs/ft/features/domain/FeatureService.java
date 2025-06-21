@@ -13,17 +13,20 @@ public class FeatureService {
     private final ReleaseRepository releaseRepository;
     private final FeatureRepository featureRepository;
     private final ProductRepository productRepository;
+    private final FavoriteFeatureRepository favoriteFeatureRepository;
     private final EventPublisher eventPublisher;
 
     FeatureService(
             ReleaseRepository releaseRepository,
             FeatureRepository featureRepository,
             ProductRepository productRepository,
+            FavoriteFeatureRepository favoriteFeatureRepository,
             EventPublisher eventPublisher) {
         this.releaseRepository = releaseRepository;
         this.featureRepository = featureRepository;
         this.productRepository = productRepository;
         this.eventPublisher = eventPublisher;
+        this.favoriteFeatureRepository = favoriteFeatureRepository;
     }
 
     public Optional<Feature> findFeatureByCode(String code) {
@@ -84,6 +87,7 @@ public class FeatureService {
     @Transactional
     public void deleteFeature(DeleteFeatureCommand cmd) {
         Feature feature = featureRepository.findByCode(cmd.code()).orElseThrow();
+        favoriteFeatureRepository.deleteByFeatureCode(cmd.code());
         featureRepository.deleteByCode(cmd.code());
         eventPublisher.publishFeatureDeletedEvent(feature, cmd.deletedBy(), Instant.now());
     }

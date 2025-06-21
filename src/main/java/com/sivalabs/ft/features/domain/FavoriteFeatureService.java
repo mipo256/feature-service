@@ -17,7 +17,8 @@ public class FavoriteFeatureService {
     @Transactional
     public void addFavoriteFeature(String userId, String featureCode) {
         // Check if the feature exists
-        final Feature feature = featureRepository.findByCode(featureCode)
+        final Feature feature = featureRepository
+                .findByCode(featureCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Feature not found"));
 
         // check if the favorite already exists
