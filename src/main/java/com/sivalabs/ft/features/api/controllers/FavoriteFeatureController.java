@@ -5,7 +5,6 @@ import com.sivalabs.ft.features.domain.FavoriteFeatureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,7 @@ class FavoriteFeatureController {
 
     private final FavoriteFeatureService favoriteFeatureService;
 
-    public FavoriteFeatureController(FavoriteFeatureService favoriteFeatureService) {
+    FavoriteFeatureController(FavoriteFeatureService favoriteFeatureService) {
         this.favoriteFeatureService = favoriteFeatureService;
     }
 
@@ -27,12 +26,10 @@ class FavoriteFeatureController {
             description = "Add a feature to the user's favorites list",
             responses = {
                 @ApiResponse(responseCode = "201", description = "Feature added to favorites successfully"),
-                @ApiResponse(responseCode = "400", description = "Invalid feature Code")
+                @ApiResponse(responseCode = "404", description = "Feature not found"),
+                @ApiResponse(responseCode = "400", description = "Feature already favorited")
             })
     ResponseEntity<Void> addFavoriteFeature(@PathVariable String featureCode) {
-        if (StringUtils.isBlank(featureCode)) {
-            return ResponseEntity.badRequest().build();
-        }
         var username = SecurityUtils.getCurrentUsername();
         favoriteFeatureService.addFavoriteFeature(username, featureCode);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -44,12 +41,9 @@ class FavoriteFeatureController {
             description = "Remove a feature from the user's favorites list",
             responses = {
                 @ApiResponse(responseCode = "204", description = "Feature removed from favorites successfully"),
-                @ApiResponse(responseCode = "400", description = "Invalid feature ID")
+                @ApiResponse(responseCode = "404", description = "Feature not found")
             })
     ResponseEntity<Void> removeFavoriteFeature(@PathVariable String featureCode) {
-        if (StringUtils.isBlank(featureCode)) {
-            return ResponseEntity.badRequest().build();
-        }
         var username = SecurityUtils.getCurrentUsername();
         favoriteFeatureService.removeFavoriteFeature(username, featureCode);
         return ResponseEntity.noContent().build();

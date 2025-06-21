@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 public class FeatureService {
     public static final String FEATURE_SEPARATOR = "-";
     private final ReleaseRepository releaseRepository;
@@ -29,18 +28,22 @@ public class FeatureService {
         this.favoriteFeatureRepository = favoriteFeatureRepository;
     }
 
+    @Transactional(readOnly = true)
     public Optional<Feature> findFeatureByCode(String code) {
         return featureRepository.findByCode(code);
     }
 
+    @Transactional(readOnly = true)
     public List<Feature> findFeaturesByRelease(String releaseCode) {
         return featureRepository.findByReleaseCode(releaseCode);
     }
 
+    @Transactional(readOnly = true)
     public List<Feature> findFeaturesByProduct(String productCode) {
         return featureRepository.findByProductCode(productCode);
     }
 
+    @Transactional(readOnly = true)
     public boolean isFeatureExists(String code) {
         return featureRepository.existsByCode(code);
     }

@@ -22,7 +22,7 @@ class FavoriteFeatureControllerTests extends AbstractIT {
     @Test
     @WithMockOAuth2User(username = "user")
     void shouldReturn400WhenAddingInvalidFeatureCode() {
-        var invalidFeatureCode = " ";
+        var invalidFeatureCode = "invalid_code";
         var result = mvc.post()
                 .uri("/api/features/{featureCode}/favorites", invalidFeatureCode)
                 .exchange();
@@ -46,7 +46,7 @@ class FavoriteFeatureControllerTests extends AbstractIT {
     @Test
     @WithMockOAuth2User(username = "user")
     void shouldReturn400WhenRemovingInvalidFeatureCode() {
-        var invalidFeatureCode = " ";
+        var invalidFeatureCode = "invalid_code";
         var result = mvc.delete()
                 .uri("/api/features/{featureCode}/favorites", invalidFeatureCode)
                 .exchange();
@@ -66,11 +66,11 @@ class FavoriteFeatureControllerTests extends AbstractIT {
 
     @Test
     @WithMockOAuth2User(username = "user")
-    void shouldReturn404WhenAddingNonExistentFeature() {
+    void shouldReturn400WhenAddingNonExistentFeature() {
         var nonExistentFeatureCode = "NON_EXISTENT_FEATURE";
         var result = mvc.post()
                 .uri("/api/features/{featureCode}/favorites", nonExistentFeatureCode)
                 .exchange();
-        assertThat(result).hasStatus(HttpStatus.NOT_FOUND);
+        assertThat(result).hasStatus(HttpStatus.BAD_REQUEST);
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 public class ReleaseService {
     public static final String RELEASE_SEPARATOR = "-";
     private final ReleaseRepository releaseRepository;
@@ -23,14 +22,17 @@ public class ReleaseService {
         this.featureRepository = featureRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<Release> findReleasesByProductCode(String productCode) {
         return releaseRepository.findByProductCode(productCode);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Release> findReleaseByCode(String code) {
         return releaseRepository.findByCode(code);
     }
 
+    @Transactional(readOnly = true)
     public boolean isReleaseExists(String code) {
         return releaseRepository.existsByCode(code);
     }

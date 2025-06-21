@@ -8,8 +8,7 @@ public class FavoriteFeatureService {
     private final FavoriteFeatureRepository favoriteFeatureRepository;
     private final FeatureRepository featureRepository;
 
-    public FavoriteFeatureService(
-            FavoriteFeatureRepository favoriteFeatureRepository, FeatureRepository featureRepository) {
+    FavoriteFeatureService(FavoriteFeatureRepository favoriteFeatureRepository, FeatureRepository featureRepository) {
         this.favoriteFeatureRepository = favoriteFeatureRepository;
         this.featureRepository = featureRepository;
     }
@@ -19,11 +18,11 @@ public class FavoriteFeatureService {
         // Check if the feature exists
         final Feature feature = featureRepository
                 .findByCode(featureCode)
-                .orElseThrow(() -> new ResourceNotFoundException("Feature not found"));
+                .orElseThrow(() -> new BadRequestException("Feature code is invalid: " + featureCode));
 
         // check if the favorite already exists
         if (favoriteFeatureRepository.existsByUserIdAndFeatureId(userId, feature.getId())) {
-            throw new DuplicateResourceException("Feature is already favorited by the user");
+            throw new BadRequestException("Feature is already favorited by the user");
         }
         FavoriteFeature favoriteFeature = new FavoriteFeature(feature.getId(), userId);
         favoriteFeatureRepository.save(favoriteFeature);
@@ -31,6 +30,9 @@ public class FavoriteFeatureService {
 
     @Transactional
     public void removeFavoriteFeature(String userId, String featureCode) {
-        favoriteFeatureRepository.deleteByUserIdAndFeatureCode(userId, featureCode);
+        int count = favoriteFeatureRepository.deleteByUserIdAndFeatureCode(userId, featureCode);
+        if (count != 1) {
+            throw new BadRequestException("Feature is not favorited by the user to remove");
+        }
     }
 }
