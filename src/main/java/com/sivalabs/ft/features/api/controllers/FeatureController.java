@@ -16,6 +16,10 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +42,13 @@ class FeatureController {
     private static final Logger log = LoggerFactory.getLogger(FeatureController.class);
     private final FeatureService featureService;
     private final FeatureMapper featureMapper;
+    private final FavoriteFeatureService favoriteFeatureService;
 
-    FeatureController(FeatureService featureService, FeatureMapper featureMapper) {
+    FeatureController(
+            FeatureService featureService, FeatureMapper featureMapper, FavoriteFeatureService favoriteFeatureService) {
         this.featureService = featureService;
         this.featureMapper = featureMapper;
+        this.favoriteFeatureService = favoriteFeatureService;
     }
 
     @GetMapping("")
@@ -66,15 +73,27 @@ class FeatureController {
             // TODO: Return 400 Bad Request
             return List.of();
         }
+        List<FeatureDto> featureDtos;
         if (StringUtils.isNotBlank(productCode)) {
-            return featureService.findFeaturesByProduct(productCode).stream()
+            featureDtos = featureService.findFeaturesByProduct(productCode).stream()
                     .map(featureMapper::toDto)
                     .toList();
         } else {
-            return featureService.findFeaturesByRelease(releaseCode).stream()
+            featureDtos = featureService.findFeaturesByRelease(releaseCode).stream()
                     .map(featureMapper::toDto)
                     .toList();
         }
+        String currentUsername = SecurityUtils.getCurrentUsername();
+        if (currentUsername != null && !featureDtos.isEmpty()) {
+            Set<String> featureCodes =
+                    featureDtos.stream().map(FeatureDto::code).collect(Collectors.toSet());
+            Map<String, Boolean> favoriteFeatures =
+                    favoriteFeatureService.getFavoriteFeatures(currentUsername, featureCodes);
+            featureDtos = featureDtos.stream()
+                    .map(featureDto -> featureDto.makeFavorite(favoriteFeatures.get(featureDto.code())))
+                    .toList();
+        }
+        return featureDtos;
     }
 
     @GetMapping("/{code}")
@@ -92,9 +111,18 @@ class FeatureController {
                 @ApiResponse(responseCode = "404", description = "Feature not found")
             })
     ResponseEntity<FeatureDto> getFeature(@PathVariable String code) {
-        return featureService
-                .findFeatureByCode(code)
-                .map(featureMapper::toDto)
+        Optional<FeatureDto> featureDtoOptional =
+                featureService.findFeatureByCode(code).map(featureMapper::toDto);
+        String currentUsername = SecurityUtils.getCurrentUsername();
+        if (currentUsername != null && featureDtoOptional.isPresent()) {
+            FeatureDto featureDto = featureDtoOptional.get();
+            Set<String> featureCodes = Set.of(featureDto.code());
+            Map<String, Boolean> favoriteFeatures =
+                    favoriteFeatureService.getFavoriteFeatures(currentUsername, featureCodes);
+            featureDto = featureDto.makeFavorite(favoriteFeatures.get(featureDto.code()));
+            featureDtoOptional = Optional.of(featureDto);
+        }
+        return featureDtoOptional
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

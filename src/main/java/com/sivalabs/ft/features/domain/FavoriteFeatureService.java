@@ -1,5 +1,9 @@
 package com.sivalabs.ft.features.domain;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +15,20 @@ public class FavoriteFeatureService {
     FavoriteFeatureService(FavoriteFeatureRepository favoriteFeatureRepository, FeatureRepository featureRepository) {
         this.favoriteFeatureRepository = favoriteFeatureRepository;
         this.featureRepository = featureRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Boolean> getFavoriteFeatures(String userId, Set<String> featureCodes) {
+        List<UserFavoriteFeature> favoriteFeatures =
+                this.favoriteFeatureRepository.findByUserIdAndFeatureCodes(userId, featureCodes);
+        if (favoriteFeatures.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, Boolean> result = new HashMap<>();
+        for (UserFavoriteFeature favoriteFeature : favoriteFeatures) {
+            result.put(favoriteFeature.code(), favoriteFeature.isFavorite());
+        }
+        return result;
     }
 
     @Transactional
