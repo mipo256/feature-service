@@ -1,4 +1,4 @@
-package com.sivalabs.ft.features.domain;
+package com.sivalabs.ft.features.domain.exceptions;
 
 public class BadRequestException extends RuntimeException {
     public BadRequestException(String message) {

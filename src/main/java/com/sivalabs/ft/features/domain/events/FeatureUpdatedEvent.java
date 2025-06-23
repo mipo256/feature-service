@@ -1,5 +1,6 @@
-package com.sivalabs.ft.features.domain;
+package com.sivalabs.ft.features.domain.events;
 
+import com.sivalabs.ft.features.domain.models.FeatureStatus;
 import java.time.Instant;
 
 public record FeatureUpdatedEvent(

@@ -1,5 +1,9 @@
 package com.sivalabs.ft.features.domain;
 
+import com.sivalabs.ft.features.domain.entities.FavoriteFeature;
+import com.sivalabs.ft.features.domain.entities.Feature;
+import com.sivalabs.ft.features.domain.exceptions.BadRequestException;
+import com.sivalabs.ft.features.domain.models.UserFavoriteFeature;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

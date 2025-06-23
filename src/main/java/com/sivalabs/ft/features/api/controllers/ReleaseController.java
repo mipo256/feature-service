@@ -1,12 +1,12 @@
 package com.sivalabs.ft.features.api.controllers;
 
-import com.sivalabs.ft.features.api.dtos.ReleaseDto;
+import com.sivalabs.ft.features.api.models.CreateReleasePayload;
+import com.sivalabs.ft.features.api.models.UpdateReleasePayload;
 import com.sivalabs.ft.features.api.utils.SecurityUtils;
-import com.sivalabs.ft.features.domain.CreateReleaseCommand;
+import com.sivalabs.ft.features.domain.Commands.CreateReleaseCommand;
+import com.sivalabs.ft.features.domain.Commands.UpdateReleaseCommand;
 import com.sivalabs.ft.features.domain.ReleaseService;
-import com.sivalabs.ft.features.domain.ReleaseStatus;
-import com.sivalabs.ft.features.domain.UpdateReleaseCommand;
-import com.sivalabs.ft.features.mappers.ReleaseMapper;
+import com.sivalabs.ft.features.domain.dtos.ReleaseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -15,10 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import java.net.URI;
-import java.time.Instant;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +37,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 class ReleaseController {
     private static final Logger log = LoggerFactory.getLogger(ReleaseController.class);
     private final ReleaseService releaseService;
-    private final ReleaseMapper releaseMapper;
 
-    ReleaseController(ReleaseService releaseService, ReleaseMapper releaseMapper) {
+    ReleaseController(ReleaseService releaseService) {
         this.releaseService = releaseService;
-        this.releaseMapper = releaseMapper;
     }
 
     @GetMapping("")
@@ -61,9 +56,7 @@ class ReleaseController {
                                         array = @ArraySchema(schema = @Schema(implementation = ReleaseDto.class))))
             })
     List<ReleaseDto> getProductReleases(@RequestParam("productCode") String productCode) {
-        return releaseService.findReleasesByProductCode(productCode).stream()
-                .map(releaseMapper::toDto)
-                .toList();
+        return releaseService.findReleasesByProductCode(productCode);
     }
 
     @GetMapping("/{code}")
@@ -83,7 +76,6 @@ class ReleaseController {
     ResponseEntity<ReleaseDto> getRelease(@PathVariable String code) {
         return releaseService
                 .findReleaseByCode(code)
-                .map(releaseMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -151,11 +143,4 @@ class ReleaseController {
         releaseService.deleteRelease(code);
         return ResponseEntity.ok().build();
     }
-
-    record CreateReleasePayload(
-            @NotEmpty(message = "Product code is required") String productCode,
-            @Size(max = 50, message = "Release code cannot exceed 50 characters") @NotEmpty(message = "Release code is required") String code,
-            String description) {}
-
-    record UpdateReleasePayload(String description, ReleaseStatus status, Instant releasedAt) {}
 }

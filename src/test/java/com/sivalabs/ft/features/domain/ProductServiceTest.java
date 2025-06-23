@@ -4,6 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sivalabs.ft.features.TestcontainersConfiguration;
+import com.sivalabs.ft.features.domain.Commands.CreateProductCommand;
+import com.sivalabs.ft.features.domain.Commands.UpdateProductCommand;
+import com.sivalabs.ft.features.domain.dtos.ProductDto;
+import com.sivalabs.ft.features.domain.exceptions.ResourceNotFoundException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +28,9 @@ class ProductServiceTest {
 
     @Test
     void testFindProductByCode() {
-        Optional<Product> result = productService.findProductByCode("intellij");
+        Optional<ProductDto> result = productService.findProductByCode("intellij");
         assertThat(result).as("Product with code 'intellij' should be present").isPresent();
-        assertThat(result.get().getCode())
+        assertThat(result.get().code())
                 .as("Product code does not match the expected value")
                 .isEqualTo("intellij");
     }

@@ -1,9 +1,13 @@
 package com.sivalabs.ft.features.api.controllers;
 
-import com.sivalabs.ft.features.api.dtos.FeatureDto;
+import com.sivalabs.ft.features.api.models.CreateFeaturePayload;
+import com.sivalabs.ft.features.api.models.UpdateFeaturePayload;
 import com.sivalabs.ft.features.api.utils.SecurityUtils;
 import com.sivalabs.ft.features.domain.*;
-import com.sivalabs.ft.features.mappers.FeatureMapper;
+import com.sivalabs.ft.features.domain.Commands.CreateFeatureCommand;
+import com.sivalabs.ft.features.domain.Commands.DeleteFeatureCommand;
+import com.sivalabs.ft.features.domain.Commands.UpdateFeatureCommand;
+import com.sivalabs.ft.features.domain.dtos.FeatureDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -12,8 +16,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +43,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 class FeatureController {
     private static final Logger log = LoggerFactory.getLogger(FeatureController.class);
     private final FeatureService featureService;
-    private final FeatureMapper featureMapper;
     private final FavoriteFeatureService favoriteFeatureService;
 
-    FeatureController(
-            FeatureService featureService, FeatureMapper featureMapper, FavoriteFeatureService favoriteFeatureService) {
+    FeatureController(FeatureService featureService, FavoriteFeatureService favoriteFeatureService) {
         this.featureService = featureService;
-        this.featureMapper = featureMapper;
         this.favoriteFeatureService = favoriteFeatureService;
     }
 
@@ -73,22 +72,18 @@ class FeatureController {
             // TODO: Return 400 Bad Request
             return List.of();
         }
+        String username = SecurityUtils.getCurrentUsername();
         List<FeatureDto> featureDtos;
         if (StringUtils.isNotBlank(productCode)) {
-            featureDtos = featureService.findFeaturesByProduct(productCode).stream()
-                    .map(featureMapper::toDto)
-                    .toList();
+            featureDtos = featureService.findFeaturesByProduct(username, productCode);
         } else {
-            featureDtos = featureService.findFeaturesByRelease(releaseCode).stream()
-                    .map(featureMapper::toDto)
-                    .toList();
+            featureDtos = featureService.findFeaturesByRelease(username, releaseCode);
         }
-        String currentUsername = SecurityUtils.getCurrentUsername();
-        if (currentUsername != null && !featureDtos.isEmpty()) {
+
+        if (username != null && !featureDtos.isEmpty()) {
             Set<String> featureCodes =
                     featureDtos.stream().map(FeatureDto::code).collect(Collectors.toSet());
-            Map<String, Boolean> favoriteFeatures =
-                    favoriteFeatureService.getFavoriteFeatures(currentUsername, featureCodes);
+            Map<String, Boolean> favoriteFeatures = favoriteFeatureService.getFavoriteFeatures(username, featureCodes);
             featureDtos = featureDtos.stream()
                     .map(featureDto -> featureDto.makeFavorite(favoriteFeatures.get(featureDto.code())))
                     .toList();
@@ -111,14 +106,12 @@ class FeatureController {
                 @ApiResponse(responseCode = "404", description = "Feature not found")
             })
     ResponseEntity<FeatureDto> getFeature(@PathVariable String code) {
-        Optional<FeatureDto> featureDtoOptional =
-                featureService.findFeatureByCode(code).map(featureMapper::toDto);
-        String currentUsername = SecurityUtils.getCurrentUsername();
-        if (currentUsername != null && featureDtoOptional.isPresent()) {
+        String username = SecurityUtils.getCurrentUsername();
+        Optional<FeatureDto> featureDtoOptional = featureService.findFeatureByCode(username, code);
+        if (username != null && featureDtoOptional.isPresent()) {
             FeatureDto featureDto = featureDtoOptional.get();
             Set<String> featureCodes = Set.of(featureDto.code());
-            Map<String, Boolean> favoriteFeatures =
-                    favoriteFeatureService.getFavoriteFeatures(currentUsername, featureCodes);
+            Map<String, Boolean> favoriteFeatures = favoriteFeatureService.getFavoriteFeatures(username, featureCodes);
             featureDto = featureDto.makeFavorite(favoriteFeatures.get(featureDto.code()));
             featureDtoOptional = Optional.of(featureDto);
         }
@@ -204,18 +197,4 @@ class FeatureController {
         featureService.deleteFeature(cmd);
         return ResponseEntity.ok().build();
     }
-
-    record CreateFeaturePayload(
-            @NotEmpty(message = "Product code is required") String productCode,
-            @NotEmpty(message = "Title is required") @Size(max = 500, message = "Title cannot exceed 500 characters") String title,
-            String description,
-            String releaseCode,
-            String assignedTo) {}
-
-    record UpdateFeaturePayload(
-            @NotEmpty(message = "Title is required") @Size(max = 500, message = "Title cannot exceed 500 characters") String title,
-            String description,
-            String releaseCode,
-            String assignedTo,
-            FeatureStatus status) {}
 }

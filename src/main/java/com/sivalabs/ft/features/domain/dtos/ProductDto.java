@@ -1,4 +1,4 @@
-package com.sivalabs.ft.features.api.dtos;
+package com.sivalabs.ft.features.domain.dtos;
 
 public record ProductDto(
         Long id,

@@ -2,8 +2,8 @@ package com.sivalabs.ft.features.api;
 
 import static org.springframework.http.HttpStatus.*;
 
-import com.sivalabs.ft.features.domain.BadRequestException;
-import com.sivalabs.ft.features.domain.ResourceNotFoundException;
+import com.sivalabs.ft.features.domain.exceptions.BadRequestException;
+import com.sivalabs.ft.features.domain.exceptions.ResourceNotFoundException;
 import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,5 +1,12 @@
 package com.sivalabs.ft.features.domain;
 
+import com.sivalabs.ft.features.domain.Commands.CreateReleaseCommand;
+import com.sivalabs.ft.features.domain.Commands.UpdateReleaseCommand;
+import com.sivalabs.ft.features.domain.dtos.ReleaseDto;
+import com.sivalabs.ft.features.domain.entities.Product;
+import com.sivalabs.ft.features.domain.entities.Release;
+import com.sivalabs.ft.features.domain.mappers.ReleaseMapper;
+import com.sivalabs.ft.features.domain.models.ReleaseStatus;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -12,24 +19,29 @@ public class ReleaseService {
     private final ReleaseRepository releaseRepository;
     private final ProductRepository productRepository;
     private final FeatureRepository featureRepository;
+    private final ReleaseMapper releaseMapper;
 
     ReleaseService(
             ReleaseRepository releaseRepository,
             ProductRepository productRepository,
-            FeatureRepository featureRepository) {
+            FeatureRepository featureRepository,
+            ReleaseMapper releaseMapper) {
         this.releaseRepository = releaseRepository;
         this.productRepository = productRepository;
         this.featureRepository = featureRepository;
+        this.releaseMapper = releaseMapper;
     }
 
     @Transactional(readOnly = true)
-    public List<Release> findReleasesByProductCode(String productCode) {
-        return releaseRepository.findByProductCode(productCode);
+    public List<ReleaseDto> findReleasesByProductCode(String productCode) {
+        return releaseRepository.findByProductCode(productCode).stream()
+                .map(releaseMapper::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public Optional<Release> findReleaseByCode(String code) {
-        return releaseRepository.findByCode(code);
+    public Optional<ReleaseDto> findReleaseByCode(String code) {
+        return releaseRepository.findByCode(code).map(releaseMapper::toDto);
     }
 
     @Transactional(readOnly = true)

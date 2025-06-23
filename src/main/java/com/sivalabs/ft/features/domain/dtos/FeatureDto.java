@@ -1,6 +1,6 @@
-package com.sivalabs.ft.features.api.dtos;
+package com.sivalabs.ft.features.domain.dtos;
 
-import com.sivalabs.ft.features.domain.FeatureStatus;
+import com.sivalabs.ft.features.domain.models.FeatureStatus;
 import java.io.Serializable;
 import java.time.Instant;
 

@@ -1,4 +1,4 @@
-package com.sivalabs.ft.features.domain;
+package com.sivalabs.ft.features.domain.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

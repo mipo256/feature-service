@@ -1,4 +1,4 @@
-package com.sivalabs.ft.features.domain;
+package com.sivalabs.ft.features.domain.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

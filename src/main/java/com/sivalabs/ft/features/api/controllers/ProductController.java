@@ -1,11 +1,12 @@
 package com.sivalabs.ft.features.api.controllers;
 
-import com.sivalabs.ft.features.api.dtos.ProductDto;
+import com.sivalabs.ft.features.api.models.CreateProductPayload;
+import com.sivalabs.ft.features.api.models.UpdateProductPayload;
 import com.sivalabs.ft.features.api.utils.SecurityUtils;
-import com.sivalabs.ft.features.domain.CreateProductCommand;
+import com.sivalabs.ft.features.domain.Commands.CreateProductCommand;
+import com.sivalabs.ft.features.domain.Commands.UpdateProductCommand;
 import com.sivalabs.ft.features.domain.ProductService;
-import com.sivalabs.ft.features.domain.UpdateProductCommand;
-import com.sivalabs.ft.features.mappers.ProductMapper;
+import com.sivalabs.ft.features.domain.dtos.ProductDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -14,8 +15,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import java.net.URI;
 import java.util.List;
 import org.slf4j.Logger;
@@ -36,11 +35,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 class ProductController {
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     private final ProductService productService;
-    private final ProductMapper productMapper;
 
-    ProductController(ProductService productService, ProductMapper productMapper) {
+    ProductController(ProductService productService) {
         this.productService = productService;
-        this.productMapper = productMapper;
     }
 
     @GetMapping("")
@@ -57,9 +54,7 @@ class ProductController {
                                         array = @ArraySchema(schema = @Schema(implementation = ProductDto.class))))
             })
     List<ProductDto> getProducts() {
-        return productService.findAllProducts().stream()
-                .map(productMapper::toDto)
-                .toList();
+        return productService.findAllProducts();
     }
 
     @GetMapping("/{code}")
@@ -79,7 +74,6 @@ class ProductController {
     ResponseEntity<ProductDto> getProduct(@PathVariable String code) {
         return productService
                 .findProductByCode(code)
-                .map(productMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -130,17 +124,4 @@ class ProductController {
                 code, payload.prefix(), payload.name(), payload.description(), payload.imageUrl(), username);
         productService.updateProduct(cmd);
     }
-
-    record CreateProductPayload(
-            @Size(max = 50, message = "Product code cannot exceed 50 characters") @NotEmpty(message = "Product code is required") String code,
-            @Size(max = 10, message = "Product prefix cannot exceed 10 characters") @NotEmpty(message = "Product prefix is required") String prefix,
-            @Size(max = 255, message = "Product name cannot exceed 255 characters") @NotEmpty(message = "Product name is required") String name,
-            String description,
-            String imageUrl) {}
-
-    record UpdateProductPayload(
-            @Size(max = 10, message = "Product prefix cannot exceed 10 characters") @NotEmpty(message = "Product prefix is required") String prefix,
-            @Size(max = 255, message = "Product name cannot exceed 255 characters") @NotEmpty(message = "Product name is required") String name,
-            String description,
-            String imageUrl) {}
 }

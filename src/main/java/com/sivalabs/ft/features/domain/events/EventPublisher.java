@@ -1,6 +1,7 @@
-package com.sivalabs.ft.features.domain;
+package com.sivalabs.ft.features.domain.events;
 
 import com.sivalabs.ft.features.ApplicationProperties;
+import com.sivalabs.ft.features.domain.entities.Feature;
 import java.time.Instant;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;

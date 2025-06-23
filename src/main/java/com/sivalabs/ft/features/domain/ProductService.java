@@ -1,5 +1,11 @@
 package com.sivalabs.ft.features.domain;
 
+import com.sivalabs.ft.features.domain.Commands.CreateProductCommand;
+import com.sivalabs.ft.features.domain.Commands.UpdateProductCommand;
+import com.sivalabs.ft.features.domain.dtos.ProductDto;
+import com.sivalabs.ft.features.domain.entities.Product;
+import com.sivalabs.ft.features.domain.exceptions.ResourceNotFoundException;
+import com.sivalabs.ft.features.domain.mappers.ProductMapper;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -8,19 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
-    ProductService(ProductRepository productRepository) {
+    ProductService(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
     @Transactional(readOnly = true)
-    public List<Product> findAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> findAllProducts() {
+        return productRepository.findAll().stream().map(productMapper::toDto).toList();
     }
 
     @Transactional(readOnly = true)
-    public Optional<Product> findProductByCode(String code) {
-        return productRepository.findByCode(code);
+    public Optional<ProductDto> findProductByCode(String code) {
+        return productRepository.findByCode(code).map(productMapper::toDto);
     }
 
     @Transactional

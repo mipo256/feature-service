@@ -1,43 +1,51 @@
-package com.sivalabs.ft.features.domain;
+package com.sivalabs.ft.features.domain.entities;
 
-import jakarta.persistence.*;
+import com.sivalabs.ft.features.domain.models.ReleaseStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Table(name = "features")
-public class Feature {
+@Table(name = "releases")
+public class Release {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "features_id_gen")
-    @SequenceGenerator(name = "features_id_gen", sequenceName = "feature_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "releases_id_gen")
+    @SequenceGenerator(name = "releases_id_gen", sequenceName = "release_id_seq")
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @NotNull @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "release_id")
-    private Release release;
 
     @Size(max = 50) @NotNull @Column(name = "code", nullable = false, length = 50)
     private String code;
-
-    @Size(max = 500) @NotNull @Column(name = "title", nullable = false, length = 500)
-    private String title;
 
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
     @NotNull @Column(name = "status", nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
-    private FeatureStatus status;
+    private ReleaseStatus status;
 
-    @Size(max = 255) @Column(name = "assigned_to")
-    private String assignedTo;
+    @Column(name = "released_at")
+    private Instant releasedAt;
 
     @Size(max = 255) @NotNull @Column(name = "created_by", nullable = false)
     private String createdBy;
@@ -51,6 +59,9 @@ public class Feature {
 
     @Column(name = "updated_at")
     private Instant updatedAt;
+
+    @OneToMany(mappedBy = "release")
+    private Set<Feature> features = new LinkedHashSet<>();
 
     public Long getId() {
         return id;
@@ -68,28 +79,12 @@ public class Feature {
         this.product = product;
     }
 
-    public Release getRelease() {
-        return release;
-    }
-
-    public void setRelease(Release release) {
-        this.release = release;
-    }
-
     public String getCode() {
         return code;
     }
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getDescription() {
@@ -100,20 +95,20 @@ public class Feature {
         this.description = description;
     }
 
-    public FeatureStatus getStatus() {
+    public ReleaseStatus getStatus() {
         return status;
     }
 
-    public void setStatus(FeatureStatus status) {
+    public void setStatus(ReleaseStatus status) {
         this.status = status;
     }
 
-    public String getAssignedTo() {
-        return assignedTo;
+    public Instant getReleasedAt() {
+        return releasedAt;
     }
 
-    public void setAssignedTo(String assignedTo) {
-        this.assignedTo = assignedTo;
+    public void setReleasedAt(Instant releasedAt) {
+        this.releasedAt = releasedAt;
     }
 
     public String getCreatedBy() {
@@ -146,5 +141,13 @@ public class Feature {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Set<Feature> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(Set<Feature> features) {
+        this.features = features;
     }
 }

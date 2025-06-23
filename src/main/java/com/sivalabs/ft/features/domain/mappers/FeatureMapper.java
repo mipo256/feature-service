@@ -1,7 +1,7 @@
-package com.sivalabs.ft.features.mappers;
+package com.sivalabs.ft.features.domain.mappers;
 
-import com.sivalabs.ft.features.api.dtos.FeatureDto;
-import com.sivalabs.ft.features.domain.Feature;
+import com.sivalabs.ft.features.domain.dtos.FeatureDto;
+import com.sivalabs.ft.features.domain.entities.Feature;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
