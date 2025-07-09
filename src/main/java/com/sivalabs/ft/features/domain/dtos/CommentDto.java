@@ -1,3 +1,3 @@
 package com.sivalabs.ft.features.domain.dtos;
 
-public record CommentDto(String code, String content, String username) {}
+public record CommentDto(Long id, String featureCode, String content, String createdBy) {}

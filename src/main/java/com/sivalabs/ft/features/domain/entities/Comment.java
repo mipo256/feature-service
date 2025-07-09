@@ -2,7 +2,6 @@ package com.sivalabs.ft.features.domain.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -11,19 +10,17 @@ import org.hibernate.annotations.ColumnDefault;
 public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_id_gen")
-    @SequenceGenerator(name = "comments_id_gen", sequenceName = "comments_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_id_gen")
+    @SequenceGenerator(name = "comment_id_gen", sequenceName = "comment_id_seq")
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Size(max = 50) @Column(name = "code", nullable = false)
-    private String code;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "feature_id", nullable = false)
+    private Feature feature;
 
-    @Column(name = "feature_id", nullable = false)
-    private Long featureId;
-
-    @Size(max = 255) @Column(name = "user_name", nullable = false)
-    private String username;
+    @Column(name = "created_by", nullable = false)
+    private String createdBy;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -31,6 +28,15 @@ public class Comment {
     @NotNull @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    public Comment() {}
+
+    public Comment(Feature feature, String createdBy, String content) {
+        this.feature = feature;
+        this.createdBy = createdBy;
+        this.content = content;
+        this.createdAt = Instant.now();
+    }
 
     public Long getId() {
         return id;
@@ -40,28 +46,20 @@ public class Comment {
         this.id = id;
     }
 
-    public String getCode() {
-        return code;
+    public Feature getFeature() {
+        return feature;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setFeature(Feature feature) {
+        this.feature = feature;
     }
 
-    public Long getFeatureId() {
-        return featureId;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setFeatureId(Long featureId) {
-        this.featureId = featureId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public String getContent() {
@@ -79,6 +77,4 @@ public class Comment {
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
-
-    public Comment() {}
 }

@@ -77,8 +77,7 @@ class CommentControllerTests extends AbstractIT {
     void shouldRemoveComment() {
 
         // Then remove it
-        var deleteResult =
-                mvc.delete().uri("/api/comments/{commentCode}", "COM-10").exchange();
+        var deleteResult = mvc.delete().uri("/api/comments/{commentId}", 1).exchange();
 
         assertThat(deleteResult).hasStatus(HttpStatus.NO_CONTENT);
     }
@@ -86,7 +85,7 @@ class CommentControllerTests extends AbstractIT {
     @Test
     @WithMockOAuth2User(username = "user")
     void shouldReturn400WhenRemovingNonExistentComment() {
-        var result = mvc.delete().uri("/api/comments/{commentCode}", "COM-999").exchange();
+        var result = mvc.delete().uri("/api/comments/{commentId}", 999).exchange();
 
         assertThat(result).hasStatus(HttpStatus.BAD_REQUEST);
     }

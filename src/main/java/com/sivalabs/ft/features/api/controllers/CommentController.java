@@ -2,7 +2,7 @@ package com.sivalabs.ft.features.api.controllers;
 
 import com.sivalabs.ft.features.api.models.AddCommentPayload;
 import com.sivalabs.ft.features.api.utils.SecurityUtils;
-import com.sivalabs.ft.features.domain.Commands;
+import com.sivalabs.ft.features.domain.Commands.CreateCommentCommand;
 import com.sivalabs.ft.features.domain.CommentService;
 import com.sivalabs.ft.features.domain.dtos.CommentDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,30 +45,29 @@ class CommentController {
             })
     ResponseEntity<String> addComment(@RequestBody @Valid AddCommentPayload addCommentPayload) {
         String username = SecurityUtils.getCurrentUsername();
-        Commands.AddCommentCommand command =
-                new Commands.AddCommentCommand(addCommentPayload.featureCode(), addCommentPayload.content(), username);
-        String commentCode = commentService.addComment(command);
+        var command = new CreateCommentCommand(addCommentPayload.featureCode(), addCommentPayload.content(), username);
+        var commentId = commentService.createComment(command);
 
-        log.info("Comment added with code: {}", commentCode);
+        log.info("Comment added with id: {}", commentId);
         return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest()
-                        .path("/{commentCode}")
-                        .buildAndExpand(commentCode)
+                        .path("/{commentId}")
+                        .buildAndExpand(commentId)
                         .toUri())
-                .body(commentCode);
+                .build();
     }
 
-    @DeleteMapping("/{commentCode}")
+    @DeleteMapping("/{commentId}")
     @Operation(
             summary = "Remove a comment",
-            description = "Remove a comment by its code",
+            description = "Remove a comment by its id",
             responses = {
                 @ApiResponse(responseCode = "204", description = "Comment removed successfully"),
                 @ApiResponse(responseCode = "400", description = "Comment not found")
             })
-    ResponseEntity<Void> removeComment(@PathVariable String commentCode) {
+    ResponseEntity<Void> removeComment(@PathVariable Long commentId) {
         String username = SecurityUtils.getCurrentUsername();
-        commentService.removeComment(username, commentCode);
-        log.info("Comment removed with code: {}", commentCode);
+        commentService.removeComment(commentId, username);
+        log.info("Comment with id: {} is removed", commentId);
         return ResponseEntity.noContent().build();
     }
 

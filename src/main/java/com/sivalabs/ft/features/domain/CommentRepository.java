@@ -9,17 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 
 interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    @Query(value = "select nextval('comment_code_seq')", nativeQuery = true)
-    long getNextCommentCode();
-
     @Modifying
-    @Query("delete from Comment c where c.username = :username and c.code = :commentCode")
-    int deleteByUserIdAndCommentCode(String username, String commentCode);
+    @Query("delete from Comment c where c.createdBy = :userId and c.id = :commentId")
+    int deleteComment(Long commentId, String userId);
 
-    @Query(
-            """
-            select c from Comment c where
-            c.featureId = (select f.id from Feature f where f.code = :featureCode)
+    @Query("""
+            select c from Comment c where c.feature.code = :featureCode
             """)
     List<Comment> findCommentsByFeatureCode(String featureCode, PageRequest pageRequest);
 }

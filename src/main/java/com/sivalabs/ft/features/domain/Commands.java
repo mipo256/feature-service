@@ -40,5 +40,6 @@ public class Commands {
 
     public record DeleteFeatureCommand(String code, String deletedBy) {}
 
-    public record AddCommentCommand(String featureCode, String content, String createdBy) {}
+    /* Comment Commands */
+    public record CreateCommentCommand(String featureCode, String content, String createdBy) {}
 }

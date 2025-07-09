@@ -1,13 +1,11 @@
-create sequence comments_id_seq start with 100 increment by 50;
+create sequence comment_id_seq start with 100 increment by 50;
 
 create table comments
 (
-    id         bigint                          not null primary key default nextval('comments_id_seq'),
-    code       varchar(50)                     not null,
-    feature_id bigint references features (id) not null,
-    user_name    varchar(255)                    not null,
-    content    text                            not null,
-    created_at timestamp                       not null             default now()
+    id         bigint       not null default nextval('comment_id_seq'),
+    feature_id bigint       not null references features (id),
+    created_by varchar(255) not null,
+    content    text         not null,
+    created_at timestamp    not null default current_timestamp,
+    primary key (id)
 );
-
-create sequence comment_code_seq start with 100 increment by 1;

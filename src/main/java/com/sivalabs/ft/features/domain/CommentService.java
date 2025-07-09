@@ -13,14 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CommentService {
-    private static final String COMMENT_PREFIX = "COM";
-    private static final String COMMENT_SEPARATOR = "-";
-
     private final CommentRepository commentRepository;
     private final FeatureRepository featureRepository;
     private final CommentMapper commentMapper;
 
-    public CommentService(
+    CommentService(
             CommentRepository commentRepository, FeatureRepository featureRepository, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.featureRepository = featureRepository;
@@ -28,31 +25,30 @@ public class CommentService {
     }
 
     @Transactional
-    public String addComment(Commands.AddCommentCommand command) {
+    public Long createComment(Commands.CreateCommentCommand command) {
         var feature = featureRepository
                 .findByCode(command.featureCode())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Feature with code %s not found.".formatted(command.featureCode())));
 
-        String code = COMMENT_PREFIX + COMMENT_SEPARATOR + commentRepository.getNextCommentCode();
         Comment comment = new Comment();
         comment.setContent(command.content());
-        comment.setFeatureId(feature.getId());
-        comment.setCode(code);
-        comment.setUsername(command.createdBy());
+        comment.setFeature(feature);
+        comment.setCreatedBy(command.createdBy());
         comment.setCreatedAt(Instant.now());
-        Comment savedComment = commentRepository.save(comment);
-        return savedComment.getCode();
+        commentRepository.save(comment);
+        return comment.getId();
     }
 
     @Transactional
-    public void removeComment(String username, String commentCode) {
-        int count = commentRepository.deleteByUserIdAndCommentCode(username, commentCode);
+    public void removeComment(Long commentId, String userId) {
+        int count = commentRepository.deleteComment(commentId, userId);
         if (count != 1) {
-            throw new BadRequestException("comment with code %s not found.".formatted(commentCode));
+            throw new BadRequestException("comment not found");
         }
     }
 
+    @Transactional(readOnly = true)
     public List<CommentDto> findCommentsByFeatureCode(String featureCode, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         List<Comment> comments = commentRepository.findCommentsByFeatureCode(featureCode, pageRequest);
