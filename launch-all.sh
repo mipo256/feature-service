@@ -2,7 +2,7 @@
 
 set -e
 
-mkdir -p "$(basename $0)/log"
+mkdir -p "$(dirname $0)/log"
 
 # Regular
 java -Dvisualvm.display.name=AOT_APP_CDS \
